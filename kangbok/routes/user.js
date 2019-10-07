@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -28,9 +29,38 @@ router.post('/join', async (req,res) => {
 });
 
 // 로그인 라우터
-router.post('login',(req,res) => {
-
+router.post('/login',(req,res,next) => {
+    passport.authenticate('local', (err, user,info) =>{
+        if (err) {
+            console.error(err);
+            return res.json(err);
+        }
+        if (info) {
+            return res.status(401).json(info.reason);
+        }
+        return req.login(user, async (loginErr) => {
+            try {
+                if (loginErr) {
+                    return res.json(loginErr);
+                }
+                const fullUser = await db.User.findOne({
+                    where:{id:user.id},
+                });
+                // req.session 객체로 넘겨주면 간단하게 넘길 수 있음.
+                console.log(req.session.passport);
+                return res.status(200).json(req.session.passport);
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    })(req,res,next)
 });
+
+router.get('/logout',(req, res) => {
+    req.logout();
+    req.session.destroy();
+    return res.status(200).json('로그아웃 완료');
+  });
 
 
 module.exports = router;
