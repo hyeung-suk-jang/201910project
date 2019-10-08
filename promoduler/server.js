@@ -46,6 +46,21 @@ app.get("/", (req, res) => {
   });
 });
 
+//login
+//커스텀 콜백사용할 예정(ajax니깐 json 응답을 줘야하기때문에 커스텀 콜백사용)
+app.post('/api/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    console.log(user);
+    if (err) { return next(err);}
+    if (!user) { return res.redirect('/login'); }
+    // req.login을 이용해서 serialize 기능이 자연스럽게 이어지도록 되어있음.
+    req.logIn(user, function(err) {
+      if (err) {return next(err);}
+      return res.json({status:200});
+    });
+  })(req, res, next); //authenticate 반환 메서드에 이 인자를 넣어서 처리해야함.
+});
+
 app.get("/dotenv",(req,res)=>{
   res.send(process.env.DB_NAME);
 });
