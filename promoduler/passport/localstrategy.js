@@ -1,4 +1,3 @@
-const passport = require('passport');
 const LocalStrategy = require("passport-local").Strategy;
 const db = require("../db");
 
@@ -13,6 +12,7 @@ module.exports = passport => {
         passwordField: "password"
       },
       function(username, password, done) {
+        console.log(username);
         //로그인 인증처리
         db.query("SELECT * FROM user WHERE `email`=?",[username],
         function(err,rows) {

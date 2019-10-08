@@ -14,7 +14,7 @@ module.exports = () => {
     console.log("passport session get id : ", id);
     db.query("select * from user where id = ? ", [id],function(err,rows) {
       var user = rows[0];
-      done(err, user);
+      done(null, user);
   });
 });
 local(passport);
