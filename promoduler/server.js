@@ -15,6 +15,9 @@ const app = express();
 const db = require('./db');
 passportConfig();
 
+//정적파일 접근위한 절대경로 지정
+app.use('/static', express.static(__dirname + '/public'));
+
 // req.body를 json으로 쓰기 위한 설정
 app.use(express.json());
 
@@ -35,6 +38,11 @@ app.use(
   expressSession(sessionOption)
 );
 
+// POST 요청의 데이터를 추출하는 미들웨어. 클라이언트의 form값을 req.body에 저장
+//extended 는 중첩된 객체표현 허용여부. 객체 안에 객체를 파싱할 수 있게하려면 true.
+//내부적으로 true 를 하면 qs 모듈을 사용, false 면 query-string 모듈을 사용.
+app.use(express.urlencoded({ extended: true }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -49,7 +57,7 @@ app.get("/", (req, res) => {
 //login
 //커스텀 콜백사용할 예정(ajax니깐 json 응답을 줘야하기때문에 커스텀 콜백사용)
 app.post('/api/login', function(req, res, next) {
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('local', function(err, user, info) { // passport/localStrategy.js를 실행
     console.log(user);
     if (err) { return next(err);}
     if (!user) { return res.redirect('/login'); }

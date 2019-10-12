@@ -8,7 +8,7 @@ const db = require("../db");
 module.exports = passport => {
   passport.use(new LocalStrategy(
       {
-        usernameField: "email",
+        usernameField: "email", // 여기서 email,pw의 값은 index.html의 form에서 해당하는 name값이여야 함
         passwordField: "password"
       },
       function(username, password, done) {
